@@ -64,6 +64,10 @@ body.pR #title,body.pL #hud{opacity:.0;transition:opacity .8s}
 #close span{position:absolute;bottom:1.4vw;inset-inline-start:1.6vw;font-size:1.15vw;font-weight:700;padding:.3em 1em;border-radius:99px;background:rgba(12,18,32,.62);border:1px solid rgba(255,255,255,.3)}
 #trans{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;pointer-events:none}
 #trans.on{opacity:1}
+/* وضع خفيف للتلفزيون: بلا تمويه خلف الزجاج لأنه بيقطّع الفيديو على معالجات التلفزيون */
+body.lite .glass{backdrop-filter:none;-webkit-backdrop-filter:none;background:linear-gradient(160deg,rgba(38,46,66,.86),rgba(20,26,42,.8))}
+body.lite .tag{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(12,18,32,.8)}
+body.lite .tag.run{background:rgba(10,60,40,.9)}
 #src{position:fixed;bottom:1.4vw;left:2.2vw;font-size:.95vw;opacity:.75;z-index:5;text-shadow:0 1px 4px #000}
 #ctl{position:fixed;bottom:1.4vw;right:2.2vw;display:none;gap:.5vw;z-index:9;padding:.6vw;flex-wrap:wrap;max-width:60vw;direction:rtl}
 body.mouse #ctl{display:flex}
@@ -99,6 +103,8 @@ body.mouse #ctl{display:flex}
 <div id="ctl" class="glass"></div>
 <script>
 {
+const LITE = /Android/i.test(navigator.userAgent) || /[?&]lite=1/.test(location.search);
+if (LITE) document.body.classList.add("lite");
 const IMG_W = 2752, IMG_H = 1536;
 const PROD = "trig_01AsqBMpya3ZEcR94hmkUvpA", MEET = "trig_01YCRqZfb6hmt1wkdEmibymt";
 // x,y = موقع الوكيل بالصورة (نسبة مئوية)
@@ -257,11 +263,11 @@ function drawEnv(){
   drawEnv.meet = meet;
   document.body.classList.toggle("meeting", meet);
   setRain(kind === "rain");
-  const tone = $("tone");
-  if (kind === "rain") { tone.style.background = night ? "rgba(10,18,40,.22)" : "rgba(70,90,120,.34)"; scene.style.filter = night ? "saturate(.9)" : "saturate(.72) brightness(.86)"; }
-  else if (kind === "cloud") { tone.style.background = night ? "rgba(10,18,40,.12)" : "rgba(110,125,145,.24)"; scene.style.filter = night ? "none" : "saturate(.8) brightness(.93)"; }
-  else if (kind === "partly") { tone.style.background = night ? "transparent" : "rgba(130,140,155,.1)"; scene.style.filter = night ? "none" : "saturate(.92)"; }
-  else { tone.style.background = "transparent"; scene.style.filter = "none"; }
+  const tone = $("tone"); const setF = f => { scene.style.filter = LITE ? "none" : f; };
+  if (kind === "rain") { tone.style.background = night ? "rgba(10,18,40,.22)" : "rgba(70,90,120,.34)"; setF(night ? "saturate(.9)" : "saturate(.72) brightness(.86)"); }
+  else if (kind === "cloud") { tone.style.background = night ? "rgba(10,18,40,.12)" : "rgba(110,125,145,.24)"; setF(night ? "none" : "saturate(.8) brightness(.93)"); }
+  else if (kind === "partly") { tone.style.background = night ? "transparent" : "rgba(130,140,155,.1)"; setF(night ? "none" : "saturate(.92)"); }
+  else { tone.style.background = "transparent"; setF("none"); }
   const words = {rain:"مطر 🌧", cloud:"غيوم ☁", partly:"غائم جزئياً ⛅", clear: night ? "صافي 🌙" : "مشمس ☀"};
   $("wx").textContent = "عمّان · " + words[kind];
   $("tmp").textContent = wx.temp == null ? "--°" : Math.round(wx.temp) + "°";
