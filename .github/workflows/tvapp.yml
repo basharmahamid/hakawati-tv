@@ -1,0 +1,22 @@
+name: Build TV app
+on:
+  push:
+    paths: ['tvapp/**', '.github/workflows/tvapp.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - name: Build APK
+        run: VERSION_CODE=${{ github.run_number }} ./tvapp/build.sh
+      - name: Publish APK as a release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view tv-app >/dev/null 2>&1 || gh release create tv-app --title "TV app" --notes "Team HQ app and screensaver for Android TV. Built by CI."
+          gh release upload tv-app tvapp/out/hq.apk --clobber
