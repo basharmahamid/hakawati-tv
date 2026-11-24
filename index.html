@@ -144,6 +144,7 @@ let wx = {temp:null, code:0, isDay:null, rain:false, cloud:0};
 function running(trig){
   const tr = byId[trig]; if (!tr || tr.enabled === false) return false;
   const lr = tr.last_run || {}, st = String(lr.status || "");
+  if (lr.fired_at && Date.now() - new Date(lr.fired_at) > 3*3600e3) return false; // حالة "شغّال" عالقة من أكتر من 3 ساعات: تجاهلها
   return /RUNNING|PENDING|STARTED|IN_PROGRESS/.test(st) || !!(lr.fired_at && !lr.finished_at && !/SUCCEED|FAIL|ERROR|CANCEL/.test(st));
 }
 function failed(trig){ const tr = byId[trig]; return !!tr && /FAIL|ERROR/.test(String((tr.last_run||{}).status||"")); }
