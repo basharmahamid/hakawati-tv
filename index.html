@@ -315,9 +315,13 @@ function showClose(id, working){
   const c = $("close"), v = c.querySelector("video"); clearTimeout(closeT); c.classList.remove("on");
   closeT = setTimeout(() => {
     c.classList.toggle("right", AGENTS[id].x > 52);
-    v.src = `vid/${id}_${working ? "w" : "r"}.mp4`; v.play().catch(() => {});
+    const k = `${id}_${working ? "w" : "r"}`;
+    // الصورة الثابتة بتبين أول، والنافذة ما بتفتح إلا لما المقطع يبلّش فعلاً (بلا علامة التشغيل تبع المتصفح)
+    v.poster = `img/p/${k}.jpg`; v.src = `vid/${k}.mp4`;
     c.querySelector("span").textContent = AGENTS[id].name + (working ? " · عم يشتغل هلق" : " · مرتاح لموعده");
-    c.classList.add("on"); ringAt(null);
+    let shown = false; const show = () => { if (shown) return; shown = true; c.classList.add("on"); ringAt(null); };
+    v.onplaying = show; v.play().catch(() => {});
+    new Image().src = v.poster; closeT = setTimeout(show, 2500);
   }, 2700);
 }
 function hideClose(){ clearTimeout(closeT); const c = $("close"); c.classList.remove("on"); setTimeout(() => { if (!c.classList.contains("on")) c.querySelector("video").pause(); }, 1000); }

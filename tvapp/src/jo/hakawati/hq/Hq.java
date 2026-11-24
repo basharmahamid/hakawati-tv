@@ -1,9 +1,11 @@
 package jo.hakawati.hq;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -29,6 +31,13 @@ final class Hq {
             public void onReceivedError(WebView v, WebResourceRequest r, WebResourceError e) {
                 // No network yet (TV just woke up): try the page again in 20 seconds.
                 if (r.isForMainFrame()) h.postDelayed(new Runnable() { public void run() { w.loadUrl(URL); } }, 20000);
+            }
+        });
+        w.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public Bitmap getDefaultVideoPoster() {
+                // Hide WebView's grey "play" placeholder that flashes before a video's first frame.
+                return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
             }
         });
         w.loadUrl(URL);
