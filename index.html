@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مقر الفريق · شاشة التلفزيون</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b0f1a;overflow:hidden;color:#fff;font-family:"Noto Kufi Arabic","Noto Sans Arabic","Segoe UI",Tahoma,sans-serif;cursor:none}
+body.mouse{cursor:default}
+#view{position:fixed;inset:0;overflow:hidden}
+#scene{position:absolute;left:0;top:0;transform-origin:0 0;transition:transform 2.6s cubic-bezier(.45,.05,.25,1);will-change:transform}
+#scene img.bg{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 2.5s ease}
+#scene img.bg.on{opacity:1}
+#scene video.bgv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 2s ease}
+#scene video.bgv.on{opacity:1}
+#tone{position:absolute;inset:0;pointer-events:none;transition:background 3s,backdrop-filter 3s;}
+#rain{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity 2s}
+#rain.on{opacity:1}
+.tag{position:absolute;transform:translate(-50%,-100%) scale(var(--inv,1));transform-origin:50% 100%;white-space:nowrap;
+  font-size:1.05vw;font-weight:700;padding:.25em .8em;border-radius:99px;background:rgba(12,18,32,.62);border:1px solid rgba(255,255,255,.28);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;gap:.5em;transition:opacity .8s,transform 2.6s}
+.tag i{width:.7em;height:.7em;border-radius:50%;background:#9aa4b5;flex:none}
+.tag.run{background:rgba(10,60,40,.78);border-color:#56e39f}
+.tag.run i{background:#56e39f;box-shadow:0 0 0 0 rgba(86,227,159,.8);animation:pulse 1.6s infinite}
+.tag.bad i{background:#ff7a66}
+body.meeting .tag{opacity:0}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(86,227,159,.8)}100%{box-shadow:0 0 0 .9em rgba(86,227,159,0)}}
+.ring{position:absolute;width:10.5%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);border:.1vw solid rgba(120,240,180,.75);
+  box-shadow:0 0 1.4vw rgba(86,227,159,.45),inset 0 0 1.6vw rgba(86,227,159,.18);opacity:0;transition:opacity 1s;pointer-events:none}
+.ring.on{opacity:1;animation:breath 2.4s ease-in-out infinite}
+@keyframes breath{50%{transform:translate(-50%,-50%) scale(1.08)}}
+
+.glass{background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.07));border:1px solid rgba(255,255,255,.35);
+  backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 1.5vw 4vw rgba(0,0,0,.45);border-radius:1.6vw}
+#hud{position:fixed;top:2.2vw;left:2.2vw;padding:1vw 1.6vw;display:flex;gap:1.6vw;align-items:center;direction:rtl;z-index:5}
+#hud .t{font-size:3vw;font-weight:800;letter-spacing:.02em;line-height:1}
+#hud .d{font-size:1.15vw;opacity:.9;margin-top:.35vw}
+#hud .w{font-size:1.3vw;border-inline-start:1px solid rgba(255,255,255,.35);padding-inline-start:1.6vw;line-height:1.5}
+#hud .w b{font-size:2vw}
+#title{position:fixed;top:2.2vw;right:2.2vw;padding:.9vw 1.6vw;z-index:5;text-align:right}
+#title h1{font-size:1.9vw;font-weight:800}
+#title p{font-size:1.15vw;opacity:.92;margin-top:.2vw}
+#panel{position:fixed;top:11.2vw;right:2.2vw;width:27vw;transform:translateX(115%);transition:transform 1.4s cubic-bezier(.3,.9,.3,1),opacity 1s;opacity:0;padding:1.3vw;z-index:6}
+#panel.left{right:auto;left:2.2vw;transform:translateX(-115%)}
+#panel.on{transform:translateX(0);opacity:1}
+#panel video,#panel .ph{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:1.1vw;display:block;background:#1b2233}
+#panel h2{font-size:2.1vw;font-weight:800}
+#panel .role{font-size:1.15vw;opacity:.92;margin-top:.3vw;line-height:1.55}
+#panel .st{display:inline-flex;align-items:center;gap:.6em;font-size:1.25vw;font-weight:700;padding:.3em 1em;border-radius:99px;margin-top:.9vw;background:rgba(255,255,255,.16)}
+#panel .st.run{background:rgba(20,120,80,.85)}
+#panel .st.run i{width:.7em;height:.7em;border-radius:50%;background:#7dffbf;animation:pulse 1.6s infinite}
+#panel dl{margin-top:.8vw;display:grid;grid-template-columns:auto 1fr;gap:.4vw 1.1vw;font-size:1.1vw;line-height:1.5}
+#panel dt{opacity:.75}
+#panel dd{font-weight:600}
+#panel .who{display:flex;flex-wrap:wrap;gap:.5vw;margin-top:1vw}
+#panel .who span{font-size:1.05vw;padding:.25em .8em;border-radius:99px;background:rgba(255,255,255,.16)}
+body.pR #title,body.pL #hud{opacity:.0;transition:opacity .8s}
+#title,#hud{transition:opacity .8s}
+#close{position:fixed;top:11.2vw;left:2.2vw;width:54vw;aspect-ratio:4/3;max-height:calc(100vh - 13.4vw);padding:.6vw;z-index:6;opacity:0;transform:scale(.55);transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.9,.3,1);pointer-events:none}
+#close.right{left:auto;right:2.2vw}
+#close.on{opacity:1;transform:none}
+#close video{width:100%;height:100%;object-fit:cover;border-radius:1.1vw;display:block;background:#1b2233}
+#close span{position:absolute;bottom:1.4vw;inset-inline-start:1.6vw;font-size:1.15vw;font-weight:700;padding:.3em 1em;border-radius:99px;background:rgba(12,18,32,.62);border:1px solid rgba(255,255,255,.3)}
+#trans{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;pointer-events:none}
+#trans.on{opacity:1}
+#src{position:fixed;bottom:1.4vw;left:2.2vw;font-size:.95vw;opacity:.75;z-index:5;text-shadow:0 1px 4px #000}
+#ctl{position:fixed;bottom:1.4vw;right:2.2vw;display:none;gap:.5vw;z-index:9;padding:.6vw;flex-wrap:wrap;max-width:60vw;direction:rtl}
+body.mouse #ctl{display:flex}
+#ctl button{font:inherit;font-size:1vw;font-weight:700;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:.4em 1em;cursor:pointer}
+#ctl button.act{background:#fff;color:#16203a}
+#ctl button:focus-visible{outline:.2vw solid #56e39f}
+@media (prefers-reduced-motion:reduce){#scene{transition-duration:.01s}.ring.on,.tag.run i{animation:none}}
+</style>
+</head>
+<body>
+<div id="view">
+  <div id="scene">
+    <img class="bg" id="i-day" src="img/day.jpg" alt="">
+    <img class="bg" id="i-night" src="img/night.jpg" alt="">
+    <img class="bg" id="i-mday" src="img/meet_day.jpg" alt="">
+    <img class="bg" id="i-mnight" src="img/meet_night.jpg" alt="">
+    <div id="loops"></div>
+    <video id="trans" muted playsinline preload="auto"></video>
+    <div id="tone"></div>
+    <canvas id="rain" width="2064" height="1152"></canvas>
+    <div class="ring" id="ring"></div>
+    <div id="tags"></div>
+  </div>
+</div>
+<div id="title" class="glass"><h1>مقر الفريق</h1><p id="sum">فريق القناة بمكاتبهم</p></div>
+<div id="hud" class="glass">
+  <div><div class="t" id="clk">--:--</div><div class="d" id="day"></div></div>
+  <div class="w"><b id="tmp">--°</b><br><span id="wx">طقس عمّان</span></div>
+</div>
+<div id="close" class="glass"><video muted loop playsinline></video><span></span></div>
+<aside id="panel" class="glass" aria-live="polite"></aside>
+<div id="src"></div>
+<div id="ctl" class="glass"></div>
+<script>
+{
+const IMG_W = 2752, IMG_H = 1536;
+const PROD = "trig_01AsqBMpya3ZEcR94hmkUvpA", MEET = "trig_01YCRqZfb6hmt1wkdEmibymt";
+// x,y = موقع الوكيل بالصورة (نسبة مئوية)
+const AGENTS = {
+ maestro:{name:"المايسترو",x:38.8,y:21.5,role:"بيرأس اجتماع الفريق الأسبوعي وبينسّق القرارات معك",doing:"عم يدير اجتماع الفريق وبيوزّع المهام",trig:MEET,sched:"اجتماع الفريق: الأحد 10:37 م"},
+ viki:{name:"فيكي",x:22.4,y:36.5,role:"السكرتيرة: بتبعتلك تقرير الفريق عالواتساب وبتوصّل أوامرك للمايسترو",doing:"عم تجهّز تقريرك وتبعتلك ياه عالواتساب",trig:"trig_018ZR3TVJ2crRaVf7iUqSt9b",sched:"كل يوم 9:57 ص · 1:57 م · 8:57 م"},
+ researcher:{name:"باحثة الخوارزميات",x:62.1,y:29,role:"بتتابع تغييرات يوتيوب وميتا من المصادر الرسمية",doing:"عم تراجع آخر تحديثات يوتيوب وميتا الرسمية",trig:"trig_01JVvAK1rdC1475D86y8SRWN",sched:"السبت 9:13 م"},
+ analyst:{name:"المحلل",x:71.5,y:28.5,role:"بيقرأ أرقام الأسبوع وبيقترح 3 إجراءات",doing:"عم يحلّل أرقام القناة لهالأسبوع",trig:"trig_01QsAQS6Y6ugcHzwJbANVZ3V",sched:"الأحد 7:41 م"},
+ scout:{name:"كشّافة الأفكار",x:81.6,y:29,role:"بتبني بنك 8 مواضيع كل أسبوع",doing:"عم تدوّر على مواضيع حلقات جديدة",trig:"trig_01WFYxPT4ZFvdDi7Qm3rLExa",sched:"الأحد 9:23 م"},
+ toolscout:{name:"كشّاف الأدوات",x:88.1,y:45.5,role:"بيدوّر بـ GitHub و Hugging Face على أدوات مجانية وبيجرّبها",doing:"عم يجرّب أدوات جديدة وبيكتب تقريره للمايسترو",trig:"trig_01RUnwoWd6fRz4m4LhFx9Mps",sched:"الجمعة 9:52 م"},
+ producer:{name:"منتج الحلقات",x:16.6,y:64.5,role:"بيصنع الحلقة والشورتس والترجمة",doing:"عم ينتج الحلقة: نص، صور، صوت، مونتاج",trig:PROD,sched:"الاثنين، الأربعاء، الخميس، الجمعة 8:37 ص"},
+ packaging:{name:"مهندسة الظهور",x:23.8,y:58,role:"العناوين والصور المصغرة والوصف",doing:"عم تصمّم العنوان والصورة المصغرة للحلقة",trig:PROD,inside:true,sched:"مع منتج الحلقات"},
+ guardian:{name:"حارس السياسات",x:44.1,y:68.5,role:"بيفحص الأصالة والمصادر قبل التسليم",doing:"عم يفحص الحلقة: الأصالة والمصادر والسياسات",trig:PROD,inside:true,sched:"مع منتج الحلقات"},
+ distributor:{name:"موزّع المنصات",x:69.4,y:69,role:"ريلز إنستغرام وفيسبوك كل يوم",doing:"عم يجهّز منشورات إنستغرام وفيسبوك",trig:"trig_01FnVy7De2iMq1MMUHvcKtWp",sched:"كل يوم 2:17 م"},
+ community:{name:"مديرة المجتمع",x:92.6,y:72.5,role:"مسودات الردود على التعليقات",doing:"عم تقرأ التعليقات وتكتب مسودات الردود",trig:"trig_01VGvEYRmR5v3WbzWR99mNmN",sched:"كل يوم 9:47 م"}
+};
+const TABLE = {x:53,y:50};
+// مضلعات النوافذ (نسبة مئوية) للمطر والغيوم
+const WINDOWS = [
+ [[7.3,2.1],[16.6,1.4],[17.2,37.5],[10.2,42.3]],
+ [[24,7.3],[28.3,7.3],[28.3,29.4],[24.6,29.4]],
+ [[37.5,7.3],[46.3,7.3],[46.3,26.3],[37.5,26.3]],
+ [[87,1.1],[90.6,1.4],[89,35.7],[86,33]],
+ [[94.8,2.1],[100,1.4],[100,46],[92.6,48.3]],
+ [[0,25],[.8,25],[.8,52],[0,53]]
+];
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = iso => { const d = new Date(iso); if (!iso || isNaN(d)) return "—";
+  return d.toLocaleString("ar", {timeZone:"Asia/Amman", weekday:"long", hour:"numeric", minute:"2-digit"}); };
+const rel = iso => { const t0 = new Date(iso); if (!iso || isNaN(t0)) return ""; const m = Math.round((t0 - Date.now())/60000), a = Math.abs(m);
+  const t = a < 1 ? "هلق" : a < 60 ? a + " دقيقة" : a < 1440 ? Math.round(a/60) + " ساعة" : Math.round(a/1440) + " يوم";
+  return a < 1 ? t : m >= 0 ? "بعد " + t : "قبل " + t; };
+
+let byId = {}, live = "snap", demo = {agent:null, meeting:null, night:null, wx:null};
+let wx = {temp:null, code:0, isDay:null, rain:false, cloud:0};
+function running(trig){
+  const tr = byId[trig]; if (!tr || tr.enabled === false) return false;
+  const lr = tr.last_run || {}, st = String(lr.status || "");
+  return /RUNNING|PENDING|STARTED|IN_PROGRESS/.test(st) || !!(lr.fired_at && !lr.finished_at && !/SUCCEED|FAIL|ERROR|CANCEL/.test(st));
+}
+function failed(trig){ const tr = byId[trig]; return !!tr && /FAIL|ERROR/.test(String((tr.last_run||{}).status||"")); }
+function activeIds(){
+  if (demo.agent) return [demo.agent];
+  return Object.keys(AGENTS).filter(id => id !== "maestro" && running(AGENTS[id].trig));
+}
+function inMeeting(){ return demo.meeting != null ? demo.meeting : running(MEET); }
+function isNight(){
+  if (demo.night != null) return demo.night;
+  if (wx.isDay != null) return !wx.isDay;
+  const h = Number(new Date().toLocaleString("en-GB",{timeZone:"Asia/Amman",hour:"2-digit",hour12:false}));
+  return h < 6 || h >= 18;
+}
+function weatherKind(){
+  if (demo.wx) return demo.wx;
+  const c = wx.code;
+  if (wx.rain || (c >= 51 && c <= 67) || (c >= 80 && c <= 82) || c >= 95) return "rain";
+  if (c === 3 || c === 45 || c === 48 || wx.cloud > 70) return "cloud";
+  if (c === 2 || wx.cloud > 35) return "partly";
+  return "clear";
+}
+
+/* ---------- الكاميرا ---------- */
+const scene = $("scene"); let SW = 0, SH = 0, cam = {s:1,x:0,y:0};
+function layout(){
+  const vw = innerWidth, vh = innerHeight, r = IMG_W/IMG_H;
+  if (vw/vh > r) { SW = vw; SH = vw/r; } else { SH = vh; SW = vh*r; }
+  scene.style.width = SW + "px"; scene.style.height = SH + "px";
+  applyCam();
+}
+function setCam(fx, fy, s, tx, ty){ cam = {fx,fy,s,tx,ty}; applyCam(); }
+function applyCam(){
+  const vw = innerWidth, vh = innerHeight, s = cam.s || 1;
+  let x = (cam.tx ?? .5)*vw - (cam.fx ?? 50)/100*SW*s, y = (cam.ty ?? .5)*vh - (cam.fy ?? 50)/100*SH*s;
+  x = Math.min(0, Math.max(vw - SW*s, x)); y = Math.min(0, Math.max(vh - SH*s, y));
+  scene.style.transform = `translate(${x}px,${y}px) scale(${s})`;
+  scene.style.setProperty("--inv", (1/s).toFixed(3));
+}
+addEventListener("resize", layout);
+
+/* ---------- المطر على زجاج النوافذ: رذاذ ثابت + قطرات بتكبر وبتسيل ---------- */
+const cv = $("rain"), cx = cv.getContext("2d");
+const mist = document.createElement("canvas"); mist.width = cv.width; mist.height = cv.height; const mx = mist.getContext("2d");
+const BOX = WINDOWS.map(p => { const xs = p.map(q => q[0]/100*cv.width), ys = p.map(q => q[1]/100*cv.height);
+  return {x0:Math.min(...xs), x1:Math.max(...xs), y0:Math.min(...ys), y1:Math.max(...ys), area:(Math.max(...xs)-Math.min(...xs))*(Math.max(...ys)-Math.min(...ys))}; });
+const AREA = BOX.reduce((t,b) => t + b.area, 0);
+let drops = [], rainOn = false, raf = 0, lastT = 0;
+function winPath(c){ c.beginPath(); WINDOWS.forEach(p => { p.forEach(([x,y],i) => { const X = x/100*cv.width, Y = y/100*cv.height; i ? c.lineTo(X,Y) : c.moveTo(X,Y); }); c.closePath(); }); }
+function pick(){ let r = Math.random()*AREA; for (const b of BOX) { if ((r -= b.area) <= 0) return b; } return BOX[0]; }
+function bead(c, x, y, r, a){ // قطرة صغيرة: حافة غامقة فوق ولمعة تحت متل انكسار الضو
+  const g = c.createRadialGradient(x, y + r*.35, r*.1, x, y, r);
+  g.addColorStop(0, `rgba(255,255,255,${.55*a})`); g.addColorStop(.55, `rgba(210,225,240,${.16*a})`); g.addColorStop(1, `rgba(20,30,45,${.24*a})`);
+  c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, 6.3); c.fill();
+}
+function mistAdd(n){ for (let i = 0; i < n; i++) { const b = pick(); bead(mx, b.x0 + Math.random()*(b.x1-b.x0), b.y0 + Math.random()*(b.y1-b.y0), .35 + Math.random()*Math.random()*1.7, .5 + Math.random()*.45); } }
+function newDrop(){ const b = pick(); return {b, x:b.x0 + Math.random()*(b.x1-b.x0), y:b.y0 + Math.random()*(b.y1-b.y0)*.85, r:1.6 + Math.random()*1.6, grow:.004 + Math.random()*.012, lim:4 + Math.random()*3.2, vy:0, hold:0, sx:Math.random()*9}; }
+function drawDrop(d){
+  const st = Math.min(1.9, 1 + d.vy*.16), rx = d.r/Math.sqrt(st), ry = d.r*st;
+  cx.save(); cx.translate(d.x, d.y); cx.scale(rx/d.r, ry/d.r);
+  const g = cx.createRadialGradient(0, d.r*.4, d.r*.08, 0, 0, d.r);
+  g.addColorStop(0, "rgba(255,255,255,.78)"); g.addColorStop(.5, "rgba(200,220,240,.2)"); g.addColorStop(.86, "rgba(30,42,60,.26)"); g.addColorStop(1, "rgba(10,16,28,.4)");
+  cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, d.r, 0, 6.3); cx.fill();
+  cx.fillStyle = "rgba(255,255,255,.85)"; cx.beginPath(); cx.arc(-d.r*.32, -d.r*.38, d.r*.16, 0, 6.3); cx.fill();
+  cx.restore();
+}
+function rainFrame(t){
+  if (rainOn) raf = requestAnimationFrame(rainFrame);
+  if (t - lastT < 30) return; lastT = t;
+  mistAdd(9);
+  while (drops.length < 150) drops.push(newDrop());
+  for (const d of drops){
+    if (d.vy === 0) { d.r += d.grow; if (d.r > d.lim) d.vy = .4; continue; }
+    if (d.hold > 0) { d.hold--; continue; }
+    d.vy = Math.min(7.5, d.vy*1.045 + .05);
+    if (Math.random() < .012) { d.hold = 6 + Math.random()*26; d.vy = .5; }
+    const py = d.y; d.y += d.vy; d.x += Math.sin((d.y + d.sx)/11)*.32;
+    // بتمسح الرذاذ بطريقها وبتترك وراها خيط مي رفيع وحبّات صغيرة
+    mx.save(); mx.globalCompositeOperation = "destination-out"; mx.lineCap = "round"; mx.lineWidth = d.r*1.7; mx.strokeStyle = "rgba(0,0,0,.92)";
+    mx.beginPath(); mx.moveTo(d.x, py); mx.lineTo(d.x, d.y); mx.stroke(); mx.restore();
+    if (Math.random() < .22) bead(mx, d.x + (Math.random()-.5)*d.r*.7, py, .5 + Math.random()*1.1, .8);
+    d.r -= .006;
+    for (const o of drops) if (o !== d && o.r > 0 && Math.abs(o.x - d.x) < d.r + o.r && Math.abs(o.y - d.y) < d.r + o.r) { d.r = Math.min(8, Math.sqrt(d.r*d.r + o.r*o.r)); o.r = 0; if (d.vy === 0) d.vy = .4; }
+  }
+  drops = drops.filter(d => d.r > .9 && d.y < d.b.y1 + 4);
+  cx.clearRect(0, 0, cv.width, cv.height);
+  cx.save(); winPath(cx); cx.clip();
+  cx.fillStyle = "rgba(140,158,180,.2)"; cx.fillRect(0, 0, cv.width, cv.height);
+  cx.drawImage(mist, 0, 0);
+  for (const d of drops) drawDrop(d);
+  cx.restore();
+}
+function setRain(on){
+  if (on === rainOn) return; rainOn = on; cv.classList.toggle("on", on); cancelAnimationFrame(raf);
+  if (on) { mx.clearRect(0, 0, mist.width, mist.height); mx.save(); winPath(mx); mx.clip(); mistAdd(6500); mx.restore(); drops = []; for (let i = 0; i < 90; i++) drops.push(newDrop()); raf = requestAnimationFrame(rainFrame); }
+  else setTimeout(() => { if (!rainOn) { drops = []; cx.clearRect(0, 0, cv.width, cv.height); } }, 2200);
+}
+
+/* ---------- الرسم ---------- */
+function drawTags(){
+  const act = new Set(activeIds());
+  $("tags").innerHTML = Object.entries(AGENTS).map(([id,a]) => {
+    const k = act.has(id) ? "run" : failed(a.trig) && !a.inside ? "bad" : "";
+    return `<div class="tag ${k}" style="left:${Math.min(a.x, 90)}%;top:${a.y - 2.2}%"><i></i>${esc(a.name)}</div>`; }).join("");
+}
+function drawEnv(){
+  const night = isNight(), meet = inMeeting(), kind = weatherKind();
+  const on = meet ? (night ? "i-mnight" : "i-mday") : (night ? "i-night" : "i-day");
+  const swap = () => { document.querySelectorAll("img.bg").forEach(i => i.classList.toggle("on", i.id === on)); loops(on); };
+  if (drawEnv.meet !== undefined && drawEnv.meet !== meet) {
+    // انتقال متحرك: الفريق بيقوم عن المكاتب وبيمشي لطاولة الاجتماع (وبالعكس لما يخلص)
+    const tv = $("trans"); tv.src = `vid/${meet ? "to_meet" : "from_meet"}_${night ? "night" : "day"}.mp4`;
+    const done = () => { swap(); setTimeout(() => tv.classList.remove("on"), 700); };
+    tv.onended = done; tv.onerror = done;
+    tv.play().then(() => tv.classList.add("on")).catch(done);
+  } else swap();
+  drawEnv.meet = meet;
+  document.body.classList.toggle("meeting", meet);
+  setRain(kind === "rain");
+  const tone = $("tone");
+  if (kind === "rain") { tone.style.background = night ? "rgba(10,18,40,.22)" : "rgba(70,90,120,.34)"; scene.style.filter = night ? "saturate(.9)" : "saturate(.72) brightness(.86)"; }
+  else if (kind === "cloud") { tone.style.background = night ? "rgba(10,18,40,.12)" : "rgba(110,125,145,.24)"; scene.style.filter = night ? "none" : "saturate(.8) brightness(.93)"; }
+  else if (kind === "partly") { tone.style.background = night ? "transparent" : "rgba(130,140,155,.1)"; scene.style.filter = night ? "none" : "saturate(.92)"; }
+  else { tone.style.background = "transparent"; scene.style.filter = "none"; }
+  const words = {rain:"مطر 🌧", cloud:"غيوم ☁", partly:"غائم جزئياً ⛅", clear: night ? "صافي 🌙" : "مشمس ☀"};
+  $("wx").textContent = "عمّان · " + words[kind];
+  $("tmp").textContent = wx.temp == null ? "--°" : Math.round(wx.temp) + "°";
+}
+// خلفية متحركة: مقطع بيتكرر فوق الصورة الثابتة للحالات يلي إلها مقطع
+const LOOPS = {"i-day":"vid/hq_day_loop.mp4", "i-night":"vid/hq_night_loop.mp4", "i-mday":"vid/meet_day_loop.mp4", "i-mnight":"vid/meet_night_loop.mp4"};
+function loops(on){
+  for (const [k, src] of Object.entries(LOOPS)) {
+    let v = document.getElementById("v-" + k);
+    if (k === on) {
+      if (!v) { v = document.createElement("video"); v.id = "v-" + k; v.className = "bgv"; v.muted = true; v.loop = true; v.playsInline = true; v.src = src; $("loops").appendChild(v); }
+      v.play().then(() => v.classList.add("on")).catch(() => {});
+    } else if (v) { v.classList.remove("on"); setTimeout(() => { if (!v.classList.contains("on")) v.pause(); }, 2200); }
+  }
+}
+function tick(){
+  const d = new Date();
+  $("clk").textContent = d.toLocaleTimeString("ar", {timeZone:"Asia/Amman", hour:"numeric", minute:"2-digit"});
+  $("day").textContent = d.toLocaleDateString("ar", {timeZone:"Asia/Amman", weekday:"long", day:"numeric", month:"long"});
+}
+function side(x){ const L = x > 52; $("panel").classList.toggle("left", L); return L ? .68 : .32; }
+function panelAgent(id, working){
+  const a = AGENTS[id], tr = byId[a.trig] || {}, lr = tr.last_run || {};
+  $("panel").innerHTML = `<h2>${esc(a.name)}</h2><p class="role">${esc(a.role)}</p>
+    <div class="st ${working ? "run" : ""}">${working ? "<i></i>عم يشتغل هلق" : "مرتاح لموعده الجاي"}</div>
+    <dl>${working ? `<dt>شو عم يعمل</dt><dd>${esc(a.doing)}</dd><dt>بلّش</dt><dd>${lr.fired_at ? esc(rel(lr.fired_at)) : "هلق"}</dd>`
+      : `<dt>آخر شغل</dt><dd>${lr.fired_at ? esc(fmt(lr.fired_at)) + " · " + esc(rel(lr.fired_at)) : "لسا ما اشتغل"}</dd>`}
+    <dt>الموعد</dt><dd>${esc(a.sched)}</dd>
+    ${tr.next_run_at ? `<dt>الجاي</dt><dd>${esc(fmt(tr.next_run_at))} · ${esc(rel(tr.next_run_at))}</dd>` : ""}</dl>`;
+  $("panel").classList.add("on");
+}
+function panelMeeting(){
+  const lr = (byId[MEET] || {}).last_run || {};
+  $("panel").innerHTML = `<h2>اجتماع الفريق</h2><p class="role">المايسترو عم يراجع مع الفريق أوامرك، أرقام الأسبوع، واقتراحات التطوير، وبيوزّع المهام.</p>
+    <div class="st run"><i></i>الاجتماع شغّال هلق</div>
+    <dl><dt>بلّش</dt><dd>${lr.fired_at ? esc(rel(lr.fired_at)) : "هلق"}</dd><dt>الموعد</dt><dd>الأحد 10:37 م</dd></dl>
+    <div class="who">${Object.values(AGENTS).map(a => `<span>${esc(a.name)}</span>`).join("")}</div>`;
+  $("panel").classList.add("on");
+}
+function hidePanel(){ $("panel").classList.remove("on"); }
+// اللقطة القريبة: بعد الزوم بتفتح نافذة فيها الشخصية الأصلية نفسها (مقطعها المتحرك)
+let closeT = 0;
+function showClose(id, working){
+  const c = $("close"), v = c.querySelector("video"); clearTimeout(closeT); c.classList.remove("on");
+  closeT = setTimeout(() => {
+    c.classList.toggle("right", AGENTS[id].x > 52);
+    v.src = `vid/${id}_${working ? "w" : "r"}.mp4`; v.play().catch(() => {});
+    c.querySelector("span").textContent = AGENTS[id].name + (working ? " · عم يشتغل هلق" : " · مرتاح لموعده");
+    c.classList.add("on"); ringAt(null);
+  }, 2700);
+}
+function hideClose(){ clearTimeout(closeT); const c = $("close"); c.classList.remove("on"); setTimeout(() => { if (!c.classList.contains("on")) c.querySelector("video").pause(); }, 1000); }
+function ringAt(id){ const r = $("ring"); if (!id) { r.classList.remove("on"); return; } r.style.left = AGENTS[id].x + "%"; r.style.top = AGENTS[id].y + "%"; r.classList.add("on"); }
+
+/* ---------- المخرج: مين بتطلع عليه الكاميرا ---------- */
+let step = 0, shot = "", last = "";
+function direct(){
+  const act = activeIds(), meet = inMeeting();
+  step++;
+  $("sum").textContent = meet ? "الفريق باجتماع هلق" : act.length ? `${act.length} عم يشتغلوا هلق: ${act.map(id => AGENTS[id].name).join("، ")}` : "كل الفريق مرتاح لموعده";
+  if (!act.length && !meet) last = "";
+  if (meet) { shot = "meet"; ringAt(null); hideClose(); $("panel").classList.remove("left"); if (last !== "meet") { last = "meet"; hidePanel(); setCam(50, 50, 1, .5, .5); setTimeout(() => { if (inMeeting()) { setCam(TABLE.x, TABLE.y, 1.6, .38, .52); panelMeeting(); } }, 6500); } else { setCam(TABLE.x, TABLE.y, 1.6, .38, .52); panelMeeting(); } return; }
+  if (act.length) { const id = act[step % act.length]; shot = "a:" + id; ringAt(id); setCam(AGENTS[id].x, AGENTS[id].y + 3, 2.25, side(AGENTS[id].x), .55); panelAgent(id, true); if (shot !== last) showClose(id, true); last = shot; return; }
+  // ما حدا شغّال: لقطة واسعة، وكل فترة جولة على وكيل
+  ringAt(null);
+  if (step % 3 === 0) { const ids = Object.keys(AGENTS), id = ids[Math.floor(step/3) % ids.length]; shot = "t:" + id; setCam(AGENTS[id].x, AGENTS[id].y + 3, 2.1, side(AGENTS[id].x), .55); panelAgent(id, false); showClose(id, false); }
+  else { shot = "wide"; hidePanel(); hideClose(); const dx = step % 2 ? 46 : 54; setCam(dx, 50, 1.06, .5, .5); }
+}
+function refresh(){ drawTags(); drawEnv(); direct(); }
+
+/* ---------- البيانات ---------- */
+function ingest(payload, how){
+  let p = payload;
+  if (typeof p === "string") { try { p = JSON.parse(p); } catch { return; } }
+  if (p && Array.isArray(p.content)) { const t = p.content.find(c => c.type === "text"); if (t) { try { p = JSON.parse(t.text); } catch { return; } } }
+  const list = p && (p.data || p.triggers || (Array.isArray(p) ? p : null));
+  if (!Array.isArray(list)) return;
+  const map = {}; list.forEach(t => { if (t && t.id) map[t.id] = t; });
+  byId = map; live = how; note(p.updated_at);
+  drawTags(); drawEnv();
+  const sig = (inMeeting() ? "m" : "") + activeIds().join(",");
+  if (sig !== ingest.sig) { ingest.sig = sig; direct(); }
+}
+function note(at){ $("src").textContent = live === "snap" ? "وضع العرض: بلا اتصال مباشر بالمهام" : "مباشر من مهام الفريق" + (at ? " · آخر تحديث " + rel(at) : ""); }
+async function pollFile(){
+  try { const r = await fetch("status.json?t=" + Date.now(), {cache:"no-store"}); if (r.ok) ingest(await r.json(), "file"); } catch {}
+}
+async function pollWeather(){
+  try {
+    const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=31.95&longitude=35.93&current=temperature_2m,is_day,weather_code,cloud_cover,precipitation&timezone=Asia%2FAmman");
+    const c = (await r.json()).current;
+    wx = {temp:c.temperature_2m, code:c.weather_code, isDay:!!c.is_day, rain:c.precipitation > 0, cloud:c.cloud_cover};
+    drawEnv();
+  } catch {}
+}
+(async () => {
+  try {
+    const mcp = window.claude && await window.claude.use("mcp");
+    if (mcp) { mcp.watchTool("Claude Code Remote", "list_triggers", {limit:50}, ev => { if (ev && ev.type === "data") ingest(ev.result && ev.result.payload, "mcp"); }, {refetchInterval:60000}); return; }
+  } catch {}
+  pollFile(); setInterval(pollFile, 30000);
+})();
+
+/* ---------- أزرار التجربة (بتظهر مع الماوس أو زر OK بالريموت) ---------- */
+const ctl = $("ctl"); let hideT = 0;
+function drawCtl(){
+  const b = (k, t, on) => `<button data-k="${k}" class="${on ? "act" : ""}">${t}</button>`;
+  ctl.innerHTML = b("auto","تلقائي", !demo.agent && demo.meeting == null && demo.night == null && !demo.wx)
+    + b("day","نهار", demo.night === false) + b("night","ليل", demo.night === true)
+    + b("clear","صحو", demo.wx === "clear") + b("cloud","غيوم", demo.wx === "cloud") + b("rain","مطر", demo.wx === "rain")
+    + b("agent","وكيل شغّال", !!demo.agent) + b("meet","اجتماع", demo.meeting === true);
+}
+function doCtl(k){
+  if (k === "auto") demo = {agent:null, meeting:null, night:null, wx:null};
+  if (k === "day") demo.night = false; if (k === "night") demo.night = true;
+  if (k === "clear" || k === "cloud" || k === "rain") demo.wx = k;
+  if (k === "agent") { const ids = Object.keys(AGENTS).filter(i => i !== "maestro"); demo.meeting = null; demo.agent = ids[(ids.indexOf(demo.agent) + 1) % ids.length]; }
+  if (k === "meet") { demo.agent = null; demo.meeting = demo.meeting ? null : true; }
+  drawCtl(); refresh();
+}
+ctl.addEventListener("click", e => { const b = e.target.closest("button"); if (b) doCtl(b.dataset.k); });
+function wake(){ document.body.classList.add("mouse"); clearTimeout(hideT); hideT = setTimeout(() => document.body.classList.remove("mouse"), 6000); }
+addEventListener("mousemove", wake); addEventListener("touchstart", wake);
+addEventListener("keydown", e => {
+  const map = {a:"agent", m:"meet", n:"night", d:"day", r:"rain", c:"cloud", s:"clear", "0":"auto"};
+  if (map[e.key]) return doCtl(map[e.key]);
+  if (e.key === "Enter" && !document.body.classList.contains("mouse")) { wake(); drawCtl(); const f = ctl.querySelector("button"); f && f.focus(); }
+  else wake();
+});
+const q = new URLSearchParams(location.search);
+if (q.get("agent") && AGENTS[q.get("agent")]) demo.agent = q.get("agent");
+if (q.get("meet")) demo.meeting = true;
+if (q.get("time")) demo.night = q.get("time") === "night";
+if (q.get("wx")) demo.wx = q.get("wx");
+
+drawCtl(); layout(); tick(); note(); refresh();
+setInterval(tick, 20000);
+setInterval(direct, 14000);
+pollWeather(); setInterval(pollWeather, 600000);
+}
+</script>
+</body>
+</html>
