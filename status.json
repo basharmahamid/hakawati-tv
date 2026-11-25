@@ -1,1 +1,13 @@
-{"updated_at":"2026-11-24T19:12:00Z","data":[]}
+{
+ "updated_at": "2026-11-25T22:31:26Z",
+ "data": [
+  {
+   "id": "trig_PUSHTEST",
+   "enabled": true,
+   "last_run": {
+    "status": "RUNNING",
+    "fired_at": "2026-11-25T22:31:26Z"
+   }
+  }
+ ]
+}
