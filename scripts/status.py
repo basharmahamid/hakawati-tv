@@ -23,6 +23,7 @@ def main():
     action, trig = sys.argv[1], sys.argv[2]
     failed = len(sys.argv) > 3 and sys.argv[3] == "failed"
     now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    last = ""
     for attempt in range(4):
         git("fetch", "--depth=1", "origin", "main")
         git("reset", "--hard", "origin/main")
@@ -47,10 +48,12 @@ def main():
         git("add", "status.json")
         git("-c", "user.name=hakawati-agent", "-c", "user.email=noreply@anthropic.com",
             "commit", "-m", f"status: {action} {trig}")
-        if git("push", "origin", "HEAD:main").returncode == 0:
+        r = git("push", "origin", "HEAD:main")
+        if r.returncode == 0:
             print("status updated:", action, trig)
             return
-    print("status update skipped (push failed)")
+        last = (r.stderr or r.stdout or "").strip()[-400:]
+    print("status update skipped (push failed):", last)
 
 
 if __name__ == "__main__":
