@@ -2,8 +2,10 @@
 """Mark an agent as running / finished in status.json so the TV page can show it.
 
 Usage (from a clone of this repo):
-    python3 scripts/status.py start <trigger_id>
-    python3 scripts/status.py done  <trigger_id> [failed]
+    python3 scripts/status.py start <agent key>
+    python3 scripts/status.py done  <agent key> [failed]
+Agent keys (fixed, also if a task is re-created): viki producer distributor community
+analyst scout researcher toolscout meeting-daily meeting-weekly
 Only this agent's own entry is touched. Safe to call when the push fails: it never raises.
 """
 import datetime, json, os, subprocess, sys

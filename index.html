@@ -106,20 +106,21 @@ body.mouse #ctl{display:flex}
 const LITE = /Android/i.test(navigator.userAgent) || /[?&]lite=1/.test(location.search);
 if (LITE) document.body.classList.add("lite");
 const IMG_W = 2752, IMG_H = 1536;
-const PROD = "trig_01AsqBMpya3ZEcR94hmkUvpA", MEET = "trig_01YCRqZfb6hmt1wkdEmibymt";
+// key = الاسم الثابت يلي بيكتبه الوكيل بـ status.json (ما بيتغيّر لو انعملت المهمة من جديد)؛ trig = رقم المهمة (للعرض المباشر من المهام)
+const PROD = {key:"producer", trig:"trig_01X2F3yjx4upQ8KyoJV5veWL"}, MEET = {key:"meeting-weekly", trig:"trig_01CzuAsWaTiSP5W4xHPg2MjL"}, DAILY = {key:"meeting-daily", trig:"trig_01JBYQeiU5xBPhEj5vD4XUR5"};
 // x,y = موقع الوكيل بالصورة (نسبة مئوية)
 const AGENTS = {
- maestro:{name:"المايسترو",x:38.8,y:21.5,role:"بيرأس اجتماع الفريق الأسبوعي وبينسّق القرارات معك",doing:"عم يدير اجتماع الفريق وبيوزّع المهام",trig:MEET,sched:"اجتماع الفريق: الأحد 10:37 م"},
- viki:{name:"فيكي",x:22.4,y:36.5,role:"السكرتيرة: بتبعتلك تقرير الفريق عالواتساب وبتوصّل أوامرك للمايسترو",doing:"عم تجهّز تقريرك وتبعتلك ياه عالواتساب",trig:"trig_018ZR3TVJ2crRaVf7iUqSt9b",sched:"كل يوم 9:57 ص · 1:57 م · 8:57 م"},
- researcher:{name:"باحثة الخوارزميات",x:62.1,y:29,role:"بتتابع تغييرات يوتيوب وميتا من المصادر الرسمية",doing:"عم تراجع آخر تحديثات يوتيوب وميتا الرسمية",trig:"trig_01JVvAK1rdC1475D86y8SRWN",sched:"السبت 9:13 م"},
- analyst:{name:"المحلل",x:71.5,y:28.5,role:"بيقرأ أرقام الأسبوع وبيقترح 3 إجراءات",doing:"عم يحلّل أرقام القناة لهالأسبوع",trig:"trig_01QsAQS6Y6ugcHzwJbANVZ3V",sched:"الأحد 7:41 م"},
- scout:{name:"كشّافة الأفكار",x:81.6,y:29,role:"بتبني بنك 8 مواضيع كل أسبوع",doing:"عم تدوّر على مواضيع حلقات جديدة",trig:"trig_01WFYxPT4ZFvdDi7Qm3rLExa",sched:"الأحد 9:23 م"},
- toolscout:{name:"كشّاف الأدوات",x:88.1,y:45.5,role:"بيدوّر بـ GitHub و Hugging Face على أدوات مجانية وبيجرّبها",doing:"عم يجرّب أدوات جديدة وبيكتب تقريره للمايسترو",trig:"trig_01RUnwoWd6fRz4m4LhFx9Mps",sched:"الجمعة 9:52 م"},
- producer:{name:"منتج الحلقات",x:16.6,y:64.5,role:"بيصنع الحلقة والشورتس والترجمة",doing:"عم ينتج الحلقة: نص، صور، صوت، مونتاج",trig:PROD,sched:"الاثنين، الأربعاء، الخميس، الجمعة 8:37 ص"},
- packaging:{name:"مهندسة الظهور",x:23.8,y:58,role:"العناوين والصور المصغرة والوصف",doing:"عم تصمّم العنوان والصورة المصغرة للحلقة",trig:PROD,inside:true,sched:"مع منتج الحلقات"},
- guardian:{name:"حارس السياسات",x:44.1,y:68.5,role:"بيفحص الأصالة والمصادر قبل التسليم",doing:"عم يفحص الحلقة: الأصالة والمصادر والسياسات",trig:PROD,inside:true,sched:"مع منتج الحلقات"},
- distributor:{name:"موزّع المنصات",x:69.4,y:69,role:"ريلز إنستغرام وفيسبوك كل يوم",doing:"عم يجهّز منشورات إنستغرام وفيسبوك",trig:"trig_01FnVy7De2iMq1MMUHvcKtWp",sched:"كل يوم 2:17 م"},
- community:{name:"مديرة المجتمع",x:92.6,y:72.5,role:"مسودات الردود على التعليقات",doing:"عم تقرأ التعليقات وتكتب مسودات الردود",trig:"trig_01VGvEYRmR5v3WbzWR99mNmN",sched:"كل يوم 9:47 م"}
+ maestro:{name:"المايسترو",x:38.8,y:21.5,role:"بيرأس اجتماع الفريق الأسبوعي وبينسّق القرارات معك",doing:"عم يدير اجتماع الفريق وبيوزّع المهام",st:MEET,sched:"اجتماع يومي 10:57 ص · أسبوعي الأحد 10:37 م"},
+ viki:{name:"فيكي",x:22.4,y:36.5,role:"السكرتيرة: بتبعتلك تقرير الفريق عالواتساب وبتوصّل أوامرك للمايسترو",doing:"عم تجهّز تقريرك وتبعتلك ياه عالواتساب",st:{key:"viki",trig:"trig_01EhhRZJGju3UgUiQBrq9xhT"},sched:"كل يوم 11:57 ص · 1:57 م · 8:57 م"},
+ researcher:{name:"باحثة الخوارزميات",x:62.1,y:29,role:"بتتابع تغييرات يوتيوب وميتا من المصادر الرسمية",doing:"عم تراجع آخر تحديثات يوتيوب وميتا الرسمية",st:{key:"researcher",trig:"trig_01Trb3EfeLgH3BzzqzSyikU4"},sched:"السبت 9:13 م"},
+ analyst:{name:"المحلل",x:71.5,y:28.5,role:"بيقرأ أرقام الأسبوع وبيقترح 3 إجراءات",doing:"عم يحلّل أرقام القناة لهالأسبوع",st:{key:"analyst",trig:"trig_018UgziSZQCBkJSCk4HgRvPi"},sched:"الأحد 7:41 م"},
+ scout:{name:"كشّافة الأفكار",x:81.6,y:29,role:"بتبني بنك 8 مواضيع كل أسبوع",doing:"عم تدوّر على مواضيع حلقات جديدة",st:{key:"scout",trig:"trig_01QvAbMdZPQiCX1Jh3mva4ER"},sched:"الأحد 9:23 م"},
+ toolscout:{name:"كشّاف الأدوات",x:88.1,y:45.5,role:"بيدوّر بـ GitHub و Hugging Face على أدوات مجانية وبيجرّبها",doing:"عم يجرّب أدوات جديدة وبيكتب تقريره للمايسترو",st:{key:"toolscout",trig:"trig_01JKgoNmmshZkxg2iyjTPXvm"},sched:"الجمعة 9:52 م"},
+ producer:{name:"منتج الحلقات",x:16.6,y:64.5,role:"بيصنع الحلقة والشورتس والترجمة",doing:"عم ينتج الحلقة: نص، صور، صوت، مونتاج",st:PROD,sched:"الاثنين، الأربعاء، الخميس 8:37 ص"},
+ packaging:{name:"مهندسة الظهور",x:23.8,y:58,role:"العناوين والصور المصغرة والوصف",doing:"عم تصمّم العنوان والصورة المصغرة للحلقة",st:PROD,inside:true,sched:"مع منتج الحلقات"},
+ guardian:{name:"حارس السياسات",x:44.1,y:68.5,role:"بيفحص الأصالة والمصادر قبل التسليم",doing:"عم يفحص الحلقة: الأصالة والمصادر والسياسات",st:PROD,inside:true,sched:"مع منتج الحلقات"},
+ distributor:{name:"موزّع المنصات",x:69.4,y:69,role:"ريلز إنستغرام وفيسبوك كل يوم",doing:"عم يجهّز منشورات إنستغرام وفيسبوك",st:{key:"distributor",trig:"trig_01XdfKuzJpp9ZyiRWVWJ7Cw6"},sched:"كل يوم 2:17 م"},
+ community:{name:"مديرة المجتمع",x:92.6,y:72.5,role:"مسودات الردود على التعليقات",doing:"عم تقرأ التعليقات وتكتب مسودات الردود",st:{key:"community",trig:"trig_01HQDDjNKu2m5r8xkExGaGso"},sched:"كل يوم 9:47 م"}
 };
 const TABLE = {x:53,y:50};
 // مضلعات النوافذ (نسبة مئوية) للمطر والغيوم
@@ -141,18 +142,19 @@ const rel = iso => { const t0 = new Date(iso); if (!iso || isNaN(t0)) return "";
 
 let byId = {}, live = "snap", demo = {agent:null, meeting:null, night:null, wx:null};
 let wx = {temp:null, code:0, isDay:null, rain:false, cloud:0};
-function running(trig){
-  const tr = byId[trig]; if (!tr || tr.enabled === false) return false;
+function rec(s){ return s ? (byId[s.key] || byId[s.trig]) : undefined; }
+function running(s){
+  const tr = rec(s); if (!tr || tr.enabled === false) return false;
   const lr = tr.last_run || {}, st = String(lr.status || "");
   if (lr.fired_at && Date.now() - new Date(lr.fired_at) > 6*3600e3) return false; // حالة "شغّال" عالقة من أكتر من 6 ساعات: تجاهلها
   return /RUNNING|PENDING|STARTED|IN_PROGRESS/.test(st) || !!(lr.fired_at && !lr.finished_at && !/SUCCEED|FAIL|ERROR|CANCEL/.test(st));
 }
-function failed(trig){ const tr = byId[trig]; return !!tr && /FAIL|ERROR/.test(String((tr.last_run||{}).status||"")); }
+function failed(s){ const tr = rec(s); return !!tr && /FAIL|ERROR/.test(String((tr.last_run||{}).status||"")); }
 function activeIds(){
   if (demo.agent) return [demo.agent];
-  return Object.keys(AGENTS).filter(id => id !== "maestro" && running(AGENTS[id].trig));
+  return Object.keys(AGENTS).filter(id => id !== "maestro" && running(AGENTS[id].st));
 }
-function inMeeting(){ return demo.meeting != null ? demo.meeting : running(MEET); }
+function inMeeting(){ return demo.meeting != null ? demo.meeting : (running(MEET) || running(DAILY)); }
 function isNight(){
   if (demo.night != null) return demo.night;
   if (wx.isDay != null) return !wx.isDay;
@@ -247,7 +249,7 @@ function setRain(on){
 function drawTags(){
   const act = new Set(activeIds());
   $("tags").innerHTML = Object.entries(AGENTS).map(([id,a]) => {
-    const k = act.has(id) ? "run" : failed(a.trig) && !a.inside ? "bad" : "";
+    const k = act.has(id) ? "run" : failed(a.st) && !a.inside ? "bad" : "";
     return `<div class="tag ${k}" style="left:${Math.min(a.x, 90)}%;top:${a.y - 2.2}%"><i></i>${esc(a.name)}</div>`; }).join("");
 }
 function drawEnv(){
@@ -291,7 +293,7 @@ function tick(){
 }
 function side(x){ const L = x > 52; $("panel").classList.toggle("left", L); return L ? .68 : .32; }
 function panelAgent(id, working){
-  const a = AGENTS[id], tr = byId[a.trig] || {}, lr = tr.last_run || {};
+  const a = AGENTS[id], tr = rec(a.st) || {}, lr = tr.last_run || {};
   $("panel").innerHTML = `<h2>${esc(a.name)}</h2><p class="role">${esc(a.role)}</p>
     <div class="st ${working ? "run" : ""}">${working ? "<i></i>عم يشتغل هلق" : "مرتاح لموعده الجاي"}</div>
     <dl>${working ? `<dt>شو عم يعمل</dt><dd>${esc(a.doing)}</dd><dt>بلّش</dt><dd>${lr.fired_at ? esc(rel(lr.fired_at)) : "هلق"}</dd>`
@@ -301,10 +303,10 @@ function panelAgent(id, working){
   $("panel").classList.add("on");
 }
 function panelMeeting(){
-  const lr = (byId[MEET] || {}).last_run || {};
+  const daily = running(DAILY) && !running(MEET), lr = (rec(daily ? DAILY : MEET) || {}).last_run || {};
   $("panel").innerHTML = `<h2>اجتماع الفريق</h2><p class="role">المايسترو عم يراجع مع الفريق أوامرك، أرقام الأسبوع، واقتراحات التطوير، وبيوزّع المهام.</p>
     <div class="st run"><i></i>الاجتماع شغّال هلق</div>
-    <dl><dt>بلّش</dt><dd>${lr.fired_at ? esc(rel(lr.fired_at)) : "هلق"}</dd><dt>الموعد</dt><dd>الأحد 10:37 م</dd></dl>
+    <dl><dt>بلّش</dt><dd>${lr.fired_at ? esc(rel(lr.fired_at)) : "هلق"}</dd><dt>الموعد</dt><dd>${daily ? "كل يوم 10:57 ص" : "الأحد 10:37 م"}</dd></dl>
     <div class="who">${Object.values(AGENTS).map(a => `<span>${esc(a.name)}</span>`).join("")}</div>`;
   $("panel").classList.add("on");
 }
