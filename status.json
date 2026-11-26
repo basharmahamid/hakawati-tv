@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-25T23:05:36Z",
+ "updated_at": "2026-11-26T05:41:50Z",
  "data": [
   {
    "id": "community",
@@ -8,6 +8,14 @@
     "status": "SUCCEEDED",
     "fired_at": "2026-11-25T23:03:53Z",
     "finished_at": "2026-11-25T23:05:36Z"
+   }
+  },
+  {
+   "id": "producer",
+   "enabled": true,
+   "last_run": {
+    "status": "RUNNING",
+    "fired_at": "2026-11-26T05:41:50Z"
    }
   }
  ]
