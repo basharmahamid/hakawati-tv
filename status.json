@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-26T05:41:50Z",
+ "updated_at": "2026-11-26T07:57:56Z",
  "data": [
   {
    "id": "community",
@@ -16,6 +16,14 @@
    "last_run": {
     "status": "RUNNING",
     "fired_at": "2026-11-26T05:41:50Z"
+   }
+  },
+  {
+   "id": "meeting-daily",
+   "enabled": true,
+   "last_run": {
+    "status": "RUNNING",
+    "fired_at": "2026-11-26T07:57:56Z"
    }
   }
  ]
