@@ -26,6 +26,12 @@ body.mouse{cursor:default}
 .tag.bad i{background:#ff7a66}
 body.meeting .tag{opacity:0}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(86,227,159,.8)}100%{box-shadow:0 0 0 .9em rgba(86,227,159,0)}}
+#links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;transition:opacity 1.2s}
+body.meeting #links{opacity:0}
+#links path{fill:none;stroke:rgba(140,200,255,.34);stroke-width:2;stroke-linecap:round;vector-effect:non-scaling-stroke}
+#links path.on{stroke:#8fd0ff;stroke-width:3;stroke-dasharray:2 14;filter:drop-shadow(0 0 6px rgba(120,200,255,.95));animation:flow 1.6s linear infinite}
+body.lite #links path.on{filter:none}
+@keyframes flow{to{stroke-dashoffset:-32}}
 .ring{position:absolute;width:10.5%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);border:.1vw solid rgba(120,240,180,.75);
   box-shadow:0 0 1.4vw rgba(86,227,159,.45),inset 0 0 1.6vw rgba(86,227,159,.18);opacity:0;transition:opacity 1s;pointer-events:none}
 .ring.on{opacity:1;animation:breath 2.4s ease-in-out infinite}
@@ -88,6 +94,7 @@ body.mouse #ctl{display:flex}
     <video id="trans" muted playsinline preload="auto"></video>
     <div id="tone"></div>
     <canvas id="rain" width="2064" height="1152"></canvas>
+    <svg id="links" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
     <div class="ring" id="ring"></div>
     <div id="tags"></div>
   </div>
@@ -140,7 +147,7 @@ const rel = iso => { const t0 = new Date(iso); if (!iso || isNaN(t0)) return "";
   const t = a < 1 ? "هلق" : a < 60 ? a + " دقيقة" : a < 1440 ? Math.round(a/60) + " ساعة" : Math.round(a/1440) + " يوم";
   return a < 1 ? t : m >= 0 ? "بعد " + t : "قبل " + t; };
 
-let byId = {}, live = "snap", demo = {agent:null, meeting:null, night:null, wx:null};
+let byId = {}, links = [], live = "snap", demo = {agent:null, meeting:null, night:null, wx:null, net:false};
 let wx = {temp:null, code:0, isDay:null, rain:false, cloud:0};
 function rec(s){ return s ? (byId[s.key] || byId[s.trig]) : undefined; }
 function running(s){
@@ -252,6 +259,15 @@ function drawTags(){
     const k = act.has(id) ? "run" : failed(a.st) && !a.inside ? "bad" : "";
     return `<div class="tag ${k}" style="left:${Math.min(a.x, 90)}%;top:${a.y - 2.2}%"><i></i>${esc(a.name)}</div>`; }).join("");
 }
+// خطوط الشبكة: خط بين مكتبين لكل تبادل بآخر 24 ساعة، وبيضوي إذا التبادل صار بآخر ساعتين
+function drawLinks(){
+  const now = Date.now(), seen = {};
+  let list = links.filter(l => l && AGENTS[l.from] && AGENTS[l.to] && l.from !== l.to && now - new Date(l.at) < 864e5);
+  if (demo.net) list = [["scout","producer"],["producer","distributor"],["analyst","scout"],["guardian","producer"],["researcher","maestro"]].map(([from,to]) => ({from, to, at:new Date().toISOString()}));
+  list.forEach(l => { const k = [l.from, l.to].sort().join(">"); if (!seen[k] || new Date(l.at) > new Date(seen[k].at)) seen[k] = l; });
+  $("links").innerHTML = Object.values(seen).map(l => { const a = AGENTS[l.from], b = AGENTS[l.to], mx = (a.x + b.x)/2, my = (a.y + b.y)/2 - 3 - Math.abs(a.x - b.x)*.12;
+    return `<path class="${now - new Date(l.at) < 72e5 ? "on" : ""}" d="M${a.x} ${a.y - 5}Q${mx} ${my - 5} ${b.x} ${b.y - 5}"/>`; }).join("");
+}
 function drawEnv(){
   const night = isNight(), meet = inMeeting(), kind = weatherKind();
   const on = meet ? (night ? "i-mnight" : "i-mday") : (night ? "i-night" : "i-day");
@@ -343,7 +359,7 @@ function direct(){
   if (step % 3 === 0) { const ids = Object.keys(AGENTS), id = ids[Math.floor(step/3) % ids.length]; shot = "t:" + id; setCam(AGENTS[id].x, AGENTS[id].y + 3, 2.1, side(AGENTS[id].x), .55); panelAgent(id, false); showClose(id, false); }
   else { shot = "wide"; hidePanel(); hideClose(); const dx = step % 2 ? 46 : 54; setCam(dx, 50, 1.06, .5, .5); }
 }
-function refresh(){ drawTags(); drawEnv(); direct(); }
+function refresh(){ drawTags(); drawLinks(); drawEnv(); direct(); }
 
 /* ---------- البيانات ---------- */
 function ingest(payload, how){
@@ -354,7 +370,8 @@ function ingest(payload, how){
   if (!Array.isArray(list)) return;
   const map = {}; list.forEach(t => { if (t && t.id) map[t.id] = t; });
   byId = map; live = how; note(p.updated_at);
-  drawTags(); drawEnv();
+  if (Array.isArray(p.links)) links = p.links;
+  drawTags(); drawLinks(); drawEnv();
   const sig = (inMeeting() ? "m" : "") + activeIds().join(",");
   if (sig !== ingest.sig) { ingest.sig = sig; direct(); }
 }
@@ -385,10 +402,11 @@ function drawCtl(){
   ctl.innerHTML = b("auto","تلقائي", !demo.agent && demo.meeting == null && demo.night == null && !demo.wx)
     + b("day","نهار", demo.night === false) + b("night","ليل", demo.night === true)
     + b("clear","صحو", demo.wx === "clear") + b("cloud","غيوم", demo.wx === "cloud") + b("rain","مطر", demo.wx === "rain")
-    + b("agent","وكيل شغّال", !!demo.agent) + b("meet","اجتماع", demo.meeting === true);
+    + b("agent","وكيل شغّال", !!demo.agent) + b("meet","اجتماع", demo.meeting === true) + b("net","الشبكة", demo.net);
 }
 function doCtl(k){
-  if (k === "auto") demo = {agent:null, meeting:null, night:null, wx:null};
+  if (k === "auto") demo = {agent:null, meeting:null, night:null, wx:null, net:false};
+  if (k === "net") demo.net = !demo.net;
   if (k === "day") demo.night = false; if (k === "night") demo.night = true;
   if (k === "clear" || k === "cloud" || k === "rain") demo.wx = k;
   if (k === "agent") { const ids = Object.keys(AGENTS).filter(i => i !== "maestro"); demo.meeting = null; demo.agent = ids[(ids.indexOf(demo.agent) + 1) % ids.length]; }
