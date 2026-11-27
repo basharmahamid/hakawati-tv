@@ -114,7 +114,7 @@ const LITE = /Android/i.test(navigator.userAgent) || /[?&]lite=1/.test(location.
 if (LITE) document.body.classList.add("lite");
 const IMG_W = 2752, IMG_H = 1536;
 // key = الاسم الثابت يلي بيكتبه الوكيل بـ status.json (ما بيتغيّر لو انعملت المهمة من جديد)؛ trig = رقم المهمة (للعرض المباشر من المهام)
-const PROD = {key:"producer", trig:"trig_01P27CtgBABm5Z4RqtBLmcbN"}, MEET = {key:"meeting-weekly", trig:"trig_0179Vs5dLXaco5j4pu5awki3"}, DAILY = {key:"meeting-daily", trig:"trig_01JXcSBSffXF8QX47g3c7o93"};
+const PROD = {key:"producer", trig:"trig_0112MANsALSMVQoasfrUYQ7D"}, MEET = {key:"meeting-weekly", trig:"trig_0179Vs5dLXaco5j4pu5awki3"}, DAILY = {key:"meeting-daily", trig:"trig_01JXcSBSffXF8QX47g3c7o93"};
 // x,y = موقع الوكيل بالصورة (نسبة مئوية)
 const AGENTS = {
  maestro:{name:"المايسترو",x:38.8,y:21.5,role:"بيرأس اجتماع الفريق الأسبوعي وبينسّق القرارات معك",doing:"عم يدير اجتماع الفريق وبيوزّع المهام",st:MEET,sched:"اجتماع يومي 10:57 ص · أسبوعي الأحد 10:37 م"},
@@ -126,7 +126,7 @@ const AGENTS = {
  producer:{name:"منتج الحلقات",x:16.6,y:64.5,role:"بيصنع الحلقة والشورتس والترجمة",doing:"عم ينتج الحلقة: نص، صور، صوت، مونتاج",st:PROD,sched:"الاثنين، الأربعاء، الخميس 8:37 ص"},
  packaging:{name:"مهندسة الظهور",x:23.8,y:58,role:"العناوين والصور المصغرة والوصف",doing:"عم تصمّم العنوان والصورة المصغرة للحلقة",st:PROD,inside:true,sched:"مع منتج الحلقات"},
  guardian:{name:"حارس السياسات",x:44.1,y:68.5,role:"بيفحص الأصالة والمصادر قبل التسليم",doing:"عم يفحص الحلقة: الأصالة والمصادر والسياسات",st:PROD,inside:true,sched:"مع منتج الحلقات"},
- distributor:{name:"موزّع المنصات",x:69.4,y:69,role:"ريلز إنستغرام وفيسبوك كل يوم",doing:"عم يجهّز منشورات إنستغرام وفيسبوك",st:{key:"distributor",trig:"trig_01XKzgazF2fwtgLzfzrWcShj"},sched:"كل يوم 2:17 م"},
+ distributor:{name:"موزّع المنصات",x:69.4,y:69,role:"ريلز إنستغرام وفيسبوك كل يوم",doing:"عم يجهّز منشورات إنستغرام وفيسبوك",st:{key:"distributor",trig:"trig_018uvx3dnpkQCpWJNz3v9LcL"},sched:"كل يوم 2:17 م"},
  community:{name:"مديرة المجتمع",x:92.6,y:72.5,role:"مسودات الردود على التعليقات",doing:"عم تقرأ التعليقات وتكتب مسودات الردود",st:{key:"community",trig:"trig_01XPiZexHa8nnBqoJx4SPX5E"},sched:"كل يوم 9:47 م"}
 };
 const TABLE = {x:53,y:50};
