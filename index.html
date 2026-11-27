@@ -114,14 +114,14 @@ const LITE = /Android/i.test(navigator.userAgent) || /[?&]lite=1/.test(location.
 if (LITE) document.body.classList.add("lite");
 const IMG_W = 2752, IMG_H = 1536;
 // key = الاسم الثابت يلي بيكتبه الوكيل بـ status.json (ما بيتغيّر لو انعملت المهمة من جديد)؛ trig = رقم المهمة (للعرض المباشر من المهام)
-const PROD = {key:"producer", trig:"trig_01X2F3yjx4upQ8KyoJV5veWL"}, MEET = {key:"meeting-weekly", trig:"trig_0179Vs5dLXaco5j4pu5awki3"}, DAILY = {key:"meeting-daily", trig:"trig_01JBYQeiU5xBPhEj5vD4XUR5"};
+const PROD = {key:"producer", trig:"trig_01P27CtgBABm5Z4RqtBLmcbN"}, MEET = {key:"meeting-weekly", trig:"trig_0179Vs5dLXaco5j4pu5awki3"}, DAILY = {key:"meeting-daily", trig:"trig_01JXcSBSffXF8QX47g3c7o93"};
 // x,y = موقع الوكيل بالصورة (نسبة مئوية)
 const AGENTS = {
  maestro:{name:"المايسترو",x:38.8,y:21.5,role:"بيرأس اجتماع الفريق الأسبوعي وبينسّق القرارات معك",doing:"عم يدير اجتماع الفريق وبيوزّع المهام",st:MEET,sched:"اجتماع يومي 10:57 ص · أسبوعي الأحد 10:37 م"},
  viki:{name:"فيكي",x:22.4,y:36.5,role:"السكرتيرة: بتبعتلك تقرير الفريق عالواتساب وبتوصّل أوامرك للمايسترو",doing:"عم تجهّز تقريرك وتبعتلك ياه عالواتساب",st:{key:"viki",trig:"trig_01Xa6C1Y1Qx6u52pHMPir1S7"},sched:"كل يوم 11:57 ص · 1:57 م · 8:57 م"},
- researcher:{name:"باحثة الخوارزميات",x:62.1,y:29,role:"بتتابع تغييرات يوتيوب وميتا من المصادر الرسمية",doing:"عم تراجع آخر تحديثات يوتيوب وميتا الرسمية",st:{key:"researcher",trig:"trig_01Trb3EfeLgH3BzzqzSyikU4"},sched:"السبت 9:13 م"},
- analyst:{name:"المحلل",x:71.5,y:28.5,role:"بيقرأ أرقام الأسبوع وبيقترح 3 إجراءات",doing:"عم يحلّل أرقام القناة لهالأسبوع",st:{key:"analyst",trig:"trig_018UgziSZQCBkJSCk4HgRvPi"},sched:"الأحد 7:41 م"},
- scout:{name:"كشّافة الأفكار",x:81.6,y:29,role:"بتبني بنك 8 مواضيع كل أسبوع",doing:"عم تدوّر على مواضيع حلقات جديدة",st:{key:"scout",trig:"trig_01QvAbMdZPQiCX1Jh3mva4ER"},sched:"الأحد 9:23 م"},
+ researcher:{name:"باحثة الخوارزميات",x:62.1,y:29,role:"بتتابع تغييرات يوتيوب وميتا من المصادر الرسمية",doing:"عم تراجع آخر تحديثات يوتيوب وميتا الرسمية",st:{key:"researcher",trig:"trig_01H2NfiwpHvqGDWWTpLyGrYX"},sched:"السبت 9:13 م"},
+ analyst:{name:"المحلل",x:71.5,y:28.5,role:"بيقرأ أرقام الأسبوع وبيقترح 3 إجراءات",doing:"عم يحلّل أرقام القناة لهالأسبوع",st:{key:"analyst",trig:"trig_013oFRBBY1sr9G4pBVsZhJFs"},sched:"الأحد 7:41 م"},
+ scout:{name:"كشّافة الأفكار",x:81.6,y:29,role:"بتبني بنك 8 مواضيع كل أسبوع",doing:"عم تدوّر على مواضيع حلقات جديدة",st:{key:"scout",trig:"trig_014jBrjrKZG83JN8KDbJtyP7"},sched:"الأحد 9:23 م"},
  toolscout:{name:"كشّاف الأدوات",x:88.1,y:45.5,role:"بيدوّر بـ GitHub و Hugging Face على أدوات مجانية وبيجرّبها",doing:"عم يجرّب أدوات جديدة وبيكتب تقريره للمايسترو",st:{key:"toolscout",trig:"trig_01PKuQwt5HJ9wUwfie47jq1v"},sched:"الجمعة 9:52 م"},
  producer:{name:"منتج الحلقات",x:16.6,y:64.5,role:"بيصنع الحلقة والشورتس والترجمة",doing:"عم ينتج الحلقة: نص، صور، صوت، مونتاج",st:PROD,sched:"الاثنين، الأربعاء، الخميس 8:37 ص"},
  packaging:{name:"مهندسة الظهور",x:23.8,y:58,role:"العناوين والصور المصغرة والوصف",doing:"عم تصمّم العنوان والصورة المصغرة للحلقة",st:PROD,inside:true,sched:"مع منتج الحلقات"},
