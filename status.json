@@ -1,12 +1,13 @@
 {
- "updated_at": "2026-11-27T18:47:38Z",
+ "updated_at": "2026-11-27T18:49:20Z",
  "data": [
   {
    "id": "community",
    "enabled": true,
    "last_run": {
-    "status": "RUNNING",
-    "fired_at": "2026-11-27T18:47:38Z"
+    "status": "FAILED",
+    "fired_at": "2026-11-27T18:47:38Z",
+    "finished_at": "2026-11-27T18:49:20Z"
    }
   },
   {
