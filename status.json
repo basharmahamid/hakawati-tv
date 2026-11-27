@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-27T18:49:20Z",
+ "updated_at": "2026-11-27T18:53:08Z",
  "data": [
   {
    "id": "community",
@@ -35,6 +35,14 @@
     "status": "SUCCEEDED",
     "fired_at": "2026-11-27T17:57:35Z",
     "finished_at": "2026-11-27T17:59:20Z"
+   }
+  },
+  {
+   "id": "toolscout",
+   "enabled": true,
+   "last_run": {
+    "status": "RUNNING",
+    "fired_at": "2026-11-27T18:53:08Z"
    }
   }
  ],
