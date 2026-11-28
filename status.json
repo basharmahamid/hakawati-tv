@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-28T10:59:16Z",
+ "updated_at": "2026-11-28T11:18:03Z",
  "data": [
   {
    "id": "community",
@@ -44,6 +44,14 @@
     "status": "SUCCEEDED",
     "fired_at": "2026-11-27T18:53:08Z",
     "finished_at": "2026-11-27T19:13:16Z"
+   }
+  },
+  {
+   "id": "distributor",
+   "enabled": true,
+   "last_run": {
+    "status": "RUNNING",
+    "fired_at": "2026-11-28T11:18:03Z"
    }
   }
  ],
