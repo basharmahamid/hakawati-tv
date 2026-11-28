@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-28T07:57:36Z",
+ "updated_at": "2026-11-28T08:03:00Z",
  "data": [
   {
    "id": "community",
@@ -23,8 +23,9 @@
    "id": "meeting-daily",
    "enabled": true,
    "last_run": {
-    "status": "RUNNING",
-    "fired_at": "2026-11-28T07:57:36Z"
+    "status": "SUCCEEDED",
+    "fired_at": "2026-11-28T07:57:36Z",
+    "finished_at": "2026-11-28T08:03:00Z"
    }
   },
   {
