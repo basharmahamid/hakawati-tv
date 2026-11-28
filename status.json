@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-28T10:57:31Z",
+ "updated_at": "2026-11-28T10:59:16Z",
  "data": [
   {
    "id": "community",
@@ -32,8 +32,9 @@
    "id": "viki",
    "enabled": true,
    "last_run": {
-    "status": "RUNNING",
-    "fired_at": "2026-11-28T10:57:31Z"
+    "status": "SUCCEEDED",
+    "fired_at": "2026-11-28T10:57:31Z",
+    "finished_at": "2026-11-28T10:59:16Z"
    }
   },
   {
